@@ -7,10 +7,11 @@ app.use(express.json())
 const db = new sqlite.Database('./bookshelf.sqlite')
 db.all = util.promisify(db.all)
 
-app.get('/rest/hello', (req, res)=> {
+app.get('/', (req, res)=> {
   res.json({
-    message:'Hello World!'
-  })
+    API_documentation:
+      "https://documenter.getpostman.com/view/10674212/TzeaiRcJ",
+  });
 })
 
 app.get('/rest/books', async (req, res) => {
@@ -37,10 +38,10 @@ app.get('/rest/genres', async (req, res) => {
   })
 })
 
-app.get('/rest/book_authors', async (req, res) => {
+app.get('/rest/book_authors/:title', async (req, res) => {
 
   
- let title = req.query.title
+ let title = req.params.title
 
   let authors = await db.all("SELECT a.* FROM authors a JOIN authors_books ab ON a.id = ab.author_id JOIN books b ON b.id = ab.book_id WHERE b.title LIKE '%" + title + "%'")
 
@@ -50,10 +51,10 @@ app.get('/rest/book_authors', async (req, res) => {
   })
 })
 
-app.get('/rest/author_books', async (req, res) => {
+app.get('/rest/author_books/:author', async (req, res) => {
 
   
- let author = req.query.author
+ let author = req.params.author 
 
   let books = await db.all("SELECT b.* FROM books b JOIN authors_books ab ON b.id = ab.book_id JOIN authors a ON a.id = ab.author_id WHERE a.name LIKE '%" + author + "%'")
 
@@ -63,10 +64,10 @@ app.get('/rest/author_books', async (req, res) => {
   })
 })
 
-app.get('/rest/book_genres', async (req, res) => {
+app.get('/rest/book_genres/:title', async (req, res) => {
 
   
- let title = req.query.title
+ let title = req.params.title
 
   let genres = await db.all("SELECT g.* FROM genres g JOIN books_genres bg ON g.id = bg.genre_id JOIN books b ON b.id = bg.book_id WHERE b.title LIKE '%" + title + "%'")
 
